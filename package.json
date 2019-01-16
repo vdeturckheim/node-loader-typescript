@@ -1,0 +1,22 @@
+{
+  "name": "@loaders/typescript",
+  "version": "0.0.0",
+  "description": "Node.js loader for TypeScript",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vdeturckheim/node-loader-typescript.git"
+  },
+  "author": "vdeturckheim",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vdeturckheim/node-loader-typescript/issues"
+  },
+  "homepage": "https://github.com/vdeturckheim/node-loader-typescript#readme",
+  "dependencies": {
+    "typescript": "^3.2.2"
+  }
+}
