@@ -1,4 +1,4 @@
-import { HELLO } from "./lib.ts";
+import { HELLO } from './lib';
 
 console.log(HELLO);
 

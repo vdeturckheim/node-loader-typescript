@@ -10,8 +10,6 @@ const CURRENT_DIR = CURRENT_URL.join('/');
 const require = Module.createRequireFromPath(CURRENT_DIR);
 const TypeScript = require('typescript');
 
-const PREFIX = 'ts_modules-';
-
 const tsThis = function (url, parent) {
 
     let src = URL.parse(url).path;
@@ -31,6 +29,9 @@ const tsThis = function (url, parent) {
 };
 
 export async function resolve(specifier, parentModuleURL, defaultResolver) {
+    if (parentModuleURL && parentModuleURL.endsWith('.mjs') && !specifier.endsWith('.ts')) {
+        specifier = specifier + '.ts';
+    }
     if (specifier.endsWith('.ts')) {
         const newTarget = tsThis(specifier, parentModuleURL);
         return defaultResolver(newTarget, parentModuleURL);
