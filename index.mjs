@@ -1,28 +1,39 @@
 import * as FS from 'fs';
 import * as Path from 'path';
-import * as OS from 'os';
-import { execSync } from 'child_process';
+import * as Module from 'module'
+import * as URL from 'url';
 
 const CURRENT_URL = (import.meta.url + '').split('/');
 CURRENT_URL.pop();
 const CURRENT_DIR = CURRENT_URL.join('/');
 
+const require = Module.createRequireFromPath(CURRENT_DIR);
+const TypeScript = require('typescript');
+
 const PREFIX = 'ts_modules-';
-const TSC = Path.join(CURRENT_DIR, 'node_modules', '.bin', 'tsc').split('file:').pop().trim();
 
-const tsThis = function (url) {
+const tsThis = function (url, parent) {
 
-    console.log('TS', url)
-    const out = url.replace('.ts', '.mjs');
-    const tmpOut = url.replace('.ts', '.js');
-    execSync(`${TSC} ${url} --module es6`);
+    let src = URL.parse(url).path;
+    if (parent) {
+        const parentPath = URL.parse(parent).path;
+        const parentDir = Path.dirname(parentPath);
+        src = Path.join(parentDir, src)
+    }
 
-    return out;
+    const tsSrc = FS.readFileSync(src).toString();
+    const transpiled = TypeScript.transpileModule(tsSrc, {
+        compilerOptions: { module: TypeScript.ModuleKind.ES2015 }
+    });
+    FS.writeFileSync(src.replace('.ts', '.mjs'), transpiled.outputText);
+
+    return url.replace('.ts', '.mjs');
 };
 
 export async function resolve(specifier, parentModuleURL, defaultResolver) {
     if (specifier.endsWith('.ts')) {
-        return defaultResolver(tsThis(specifier, parentModuleURL));
+        const newTarget = tsThis(specifier, parentModuleURL);
+        return defaultResolver(newTarget, parentModuleURL);
     }
     return defaultResolver(specifier, parentModuleURL);
 }
