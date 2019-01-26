@@ -10,6 +10,7 @@ const CURRENT_DIR = CURRENT_URL.join('/');
 
 const require = Module.createRequireFromPath(CURRENT_DIR);
 const TypeScript = require('typescript');
+const Wreck = require('wreck');
 
 const readFile = promisify(FS.readFile);
 const writeFile = promisify(FS.writeFile);
@@ -33,6 +34,14 @@ const tsThis = async function (url, parent) {
 };
 
 export async function resolve(specifier, parentModuleURL, defaultResolver) {
+
+    if (specifier.startsWith('https://')) {
+        console.log('HTTPS')
+        const { payload } = await Wreck.get(specifier);
+        await writeFile('/tmp/tmp.mjs', payload);
+        return defaultResolver('file:///tmp/tmp.mjs')
+    }
+
     if (parentModuleURL && parentModuleURL.endsWith('.mjs') && !specifier.endsWith('.ts')) {
         specifier = specifier + '.ts';
     }
@@ -40,5 +49,6 @@ export async function resolve(specifier, parentModuleURL, defaultResolver) {
         const newTarget = await tsThis(specifier, parentModuleURL);
         return defaultResolver(newTarget, parentModuleURL);
     }
+
     return defaultResolver(specifier, parentModuleURL);
 }

@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/vdeturckheim/node-loader-typescript#readme",
   "dependencies": {
-    "typescript": "^3.2.2"
+    "typescript": "^3.2.2",
+    "wreck": "^14.1.3"
   }
 }
